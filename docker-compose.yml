@@ -1,0 +1,55 @@
+version: '2.1'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      args:
+        requirements: development.txt
+    command: python app_celery.py
+    restart: 'no'
+    depends_on:
+      - rabbitmq
+      - redis
+    volumes:
+      - ./backend/project:/app
+    env_file:
+      - env.backend.env
+      - env.rabbitmq.env
+      - env.celery.env
+
+  rabbitmq:
+    image: rabbitmq:3.7.8-management-alpine
+    restart: 'no'
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    env_file:
+      - env.rabbitmq.env
+    ports:
+      - 15672:15672
+
+  redis:
+    image: redis:5.0.1-alpine
+    restart: 'no'
+    volumes:
+      - redis:/data
+    ports:
+      - 6379:6379
+  worker:
+    build:
+      context: ./backend
+      args:
+        requirements: development.txt
+    command: celery -A app_celery worker -l info -c 5
+    volumes:
+       - ./backend/project:/app
+    depends_on:
+      - rabbitmq
+      - redis
+    env_file:
+      - env.celery.env
+      - env.rabbitmq.env
+
+volumes:
+  redis:
+  rabbitmq:
