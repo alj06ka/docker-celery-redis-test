@@ -1,3 +1,5 @@
+import random
+
 import requests
 from celery import Celery
 
@@ -15,10 +17,12 @@ def fetch_url(url):
     print(resp.status_code)
 
 
-def func(urls):
-    for url in urls:
-        fetch_url.delay(url)
+def get_response(url):
+    fetch_url.delay(url)
 
 
 if __name__ == "__main__":
-    func(["http://google.com", "https://amazon.in", "https://facebook.com", "https://twitter.com", "https://alexa.com"])
+    test_list = ["http://google.com", "https://amazon.in", "https://facebook.com", "https://twitter.com", "https://alexa.com"]
+    for _ in range(10000):
+        random_website = random.choice(test_list)
+        get_response(random_website)
