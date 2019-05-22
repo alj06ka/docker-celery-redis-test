@@ -8,7 +8,7 @@ from google.cloud import storage
 # If you don't specify credentials when constructing the client, the
 # client library will look for credentials in the environment.
 
-app = Celery('app_celery', broker='redis://10.0.0.4:6379/0')
+app = Celery('app_celery', broker='redis://10.0.0.4:6379/mymemorystore')
 
 
 @app.task
